@@ -5,6 +5,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract WeatherOracle is Ownable {
   mapping(address => bool) oracles;
+  string public validator;
   constructor() public {
   }
 
@@ -15,5 +16,9 @@ contract WeatherOracle is Ownable {
   function isOracle(address _oracleAddress) public view returns(bool){
     bool _isOracle = oracles[_oracleAddress];
     return _isOracle;
+  }
+
+  function setValidator(string memory _validator) public onlyOwner{
+    validator = _validator;
   }
 }

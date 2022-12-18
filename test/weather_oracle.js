@@ -33,4 +33,11 @@ contract("WeatherOracle", function ([owner, oracle1, oracle2, other]) {
     expect(_isOtherWhitelisted).to.equal(false);
   })
 
+  it("owner can set measurements validator", async function(){
+    const _setValidator = "docker.io/WeatherComputationNetwork/weathervalidator:1.0"
+    await this.oracle.setValidator("docker.io/WeatherComputationNetwork/weathervalidator:1.0");
+    const _getValidator = await this.oracle.validator.call();
+    expect(_setValidator).to.equal(_getValidator)
+  })
+
 });

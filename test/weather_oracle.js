@@ -91,20 +91,4 @@ contract("WeatherOracle", function ([owner, oracle1, oracle2, other, validatorNo
     });
   })
 
-  it("when quorum on validator's vote is reached the measurements are emitted ", async function () {
-    const _getSubmission = await this.oracle.submission.call(oracle1, { from: validatorNode2 })
-    
-    const _finalVote = await this.oracle.confirmSubmission(oracle1, {from: validatorNode2})
-
-    expectEvent(_finalVote, 'NewMeasurement', {
-      oracle: oracle1,
-      measurements: _getSubmission[0],
-      validator: _getSubmission[1],
-      validatorResult:BN(_getSubmission[2]),
-      bacalhauJobId: _getSubmission[3],
-      votes: BN(2),
-      voters: [validatorNode1, validatorNode2]
-    });
-  })
-
 });

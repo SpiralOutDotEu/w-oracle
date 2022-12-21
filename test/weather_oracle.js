@@ -75,7 +75,7 @@ contract("WeatherOracle", function ([owner, oracle1, oracle2, other, validatorNo
     expect(_getSubmission[4]).to.be.bignumber.equal(BN(1))
   })
 
-  it("when quorum on validator's vote is reached the measurements are emitted ", async function () {
+  it("when quorum on validator's vote is reached the measurements are emitted and reward is given", async function () {
     const _getSubmission = await this.oracle.submission.call(oracle1, { from: validatorNode2 })
     
     const _finalVote = await this.oracle.confirmSubmission(oracle1, {from: validatorNode2})
@@ -89,6 +89,12 @@ contract("WeatherOracle", function ([owner, oracle1, oracle2, other, validatorNo
       votes: BN(2),
       voters: [validatorNode1, validatorNode2]
     });
+    const _balanceOracle1 = await this.oracle.balanceOf.call(oracle1)
+    const _balanceValidator1 = await this.oracle.balanceOf.call(validatorNode1)
+    const _balanceValidator2 = await this.oracle.balanceOf.call(validatorNode2)
+    expect(_balanceOracle1).to.be.bignumber.equal(BN(_getSubmission[2]))
+    expect(_balanceValidator1).to.be.bignumber.equal(BN(_getSubmission[2]))
+    expect(_balanceValidator2).to.be.bignumber.equal(BN(_getSubmission[2]))
   })
 
 });

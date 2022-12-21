@@ -2,8 +2,9 @@
 pragma solidity >=0.8.0 <0.9.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-contract WeatherOracle is Ownable {
+contract WeatherOracle is Ownable, ERC20 {
   struct Measurements {
     string measurements;
     string validator;
@@ -35,7 +36,7 @@ contract WeatherOracle is Ownable {
     address[] voters
   );
 
-  constructor() public {
+  constructor() ERC20("WeatherToken", "WTK") {
   }
 
   function addOracle(address _oracleAddress) public onlyOwner{
@@ -70,7 +71,9 @@ contract WeatherOracle is Ownable {
         submission[oracle].votes,
         submission[oracle].voters
       );
-
+    _mint(oracle, submission[oracle].validatorResult);
+    _mint(submission[oracle].voters[0], submission[oracle].validatorResult);
+    _mint(submission[oracle].voters[1], submission[oracle].validatorResult);
     }
   }
 

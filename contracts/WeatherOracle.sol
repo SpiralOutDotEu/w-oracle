@@ -8,19 +8,31 @@ contract WeatherOracle is Ownable {
     string measurements;
     string validator;
     uint16 validatorResult;
-    string validatorHash;
+    string bacalhauJobId;
     uint16 votes;
+    address[] voters;
   }
 
   mapping(address => bool) oracles;
   string public validator;
   mapping(address => Measurements) public submission;
+  uint16 quorum = 2;
 
   event NewSubmission (
     address oracle,
     string validator,
     uint16 validatorResult,
     string bacalhauJobId
+  );
+
+  event NewMeasurement(
+    address oracle,
+    string measurements,
+    string validator,
+    uint16 validatorResult,
+    string bacalhauJobId,
+    uint16 votes,
+    address[] voters
   );
 
   constructor() public {
@@ -40,13 +52,26 @@ contract WeatherOracle is Ownable {
   }
 
   function submitMeasurements(string memory _measurementsFile, string memory _validator, uint16 _validatorResult, string memory _bacalhauJobId ) public {
-    Measurements memory _measurements = Measurements(_measurementsFile,_validator, _validatorResult, _bacalhauJobId, 0);
+    Measurements memory _measurements = Measurements(_measurementsFile,_validator, _validatorResult, _bacalhauJobId, 0, new address[](0));
     submission[msg.sender] = _measurements;
     emit NewSubmission(msg.sender, _validator, _validatorResult, _bacalhauJobId);
   }
 
   function confirmSubmission(address oracle) public{
-    submission[oracle].votes = submission[msg.sender].votes + 1;
+    submission[oracle].votes = submission[oracle].votes + 1;
+    submission[oracle].voters.push(msg.sender);
+    if(submission[oracle].votes == quorum){
+      emit NewMeasurement(
+        oracle,
+        submission[oracle].measurements,
+        submission[oracle].validator,
+        submission[oracle].validatorResult,
+        submission[oracle].bacalhauJobId,
+        submission[oracle].votes,
+        submission[oracle].voters
+      );
+
+    }
   }
 
 }

@@ -9,6 +9,7 @@ contract WeatherOracle is Ownable {
     string validator;
     uint16 validatorResult;
     string validatorHash;
+    uint16 votes;
   }
 
   mapping(address => bool) oracles;
@@ -39,12 +40,13 @@ contract WeatherOracle is Ownable {
   }
 
   function submitMeasurements(string memory _measurementsFile, string memory _validator, uint16 _validatorResult, string memory _bacalhauJobId ) public {
-    Measurements memory _measurements = Measurements(_measurementsFile,_validator, _validatorResult, _bacalhauJobId);
+    Measurements memory _measurements = Measurements(_measurementsFile,_validator, _validatorResult, _bacalhauJobId, 0);
     submission[msg.sender] = _measurements;
     emit NewSubmission(msg.sender, _validator, _validatorResult, _bacalhauJobId);
   }
 
-  function getSubmission(address oracleAddress) public view returns(Measurements memory) {
-
+  function confirmSubmission(address oracle) public{
+    submission[oracle].votes = submission[msg.sender].votes + 1;
   }
+
 }

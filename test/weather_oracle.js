@@ -11,8 +11,8 @@ const {
  * Ethereum client
  * See docs: https://www.trufflesuite.com/docs/truffle/testing/writing-tests-in-javascript
  */
-contract("WeatherOracle", function ([owner, oracle1, oracle2, other]) {
-  beforeEach(async function () {
+contract("WeatherOracle", function ([owner, oracle1, oracle2, other, validatorNode1]) {
+  before(async function () {
     this.oracle = await WeatherOracle.new({ from: owner })
   })
 
@@ -67,6 +67,12 @@ contract("WeatherOracle", function ([owner, oracle1, oracle2, other]) {
       validatorResult: BN(_validatorResult),
       bacalhauJobId: _bacalhauJobId
     });
+  })
+
+  it("validator node checks and provides confirmation vote on oracle's submission ", async function () {
+    await this.oracle.confirmSubmission(oracle1, {from: validatorNode1})
+    const _getSubmission = await this.oracle.submission.call(oracle1, { from: oracle2 })
+    expect(_getSubmission[4]).to.be.bignumber.equal(BN(1))
   })
 
 });

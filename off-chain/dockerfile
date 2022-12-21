@@ -1,0 +1,12 @@
+FROM python:3.7
+
+RUN mkdir /data
+RUN mkdir /data/input
+RUN mkdir /data/output
+
+WORKDIR /data
+
+COPY weather_validator.py ./
+RUN pip install web3
+
+ENTRYPOINT [ "python3", "./weather_validator.py" ]
